@@ -11,6 +11,8 @@ Walter is a q-bouncy gray-blue dumpling pet for Codex.
 - `qa/validation-extended.json` - deterministic atlas validation report.
 - `notify/codex_notify.ps1` - Windows PowerShell notification player.
 - `notify/codex_notify.bat` - convenience launcher for the notification script.
+- `notify/install_global_voice_notify.ps1` - installs the voice notification globally for Codex.
+- `notify/install_global_voice_notify.bat` - convenience launcher for the global installer.
 - `notify/run_with_codex_notify.ps1` - runs a command and plays the notification when it exits.
 - `notify/[毒の語り手]終わったぞ......でいいか？.mp3` - bundled voice notification source.
 
@@ -45,14 +47,34 @@ Copy-Item -LiteralPath ".\pet\spritesheet.webp" -Destination "$env:USERPROFILE\.
 
 ### Voice Notification
 
-The notification script plays the bundled MP3 from `notify/` by default:
+Install the bundled voice notification globally for Codex on Windows:
+
+```powershell
+.\notify\install_global_voice_notify.bat
+```
+
+The installer copies the notification files into:
+
+```text
+~/.codex/notify/
+```
+
+It also updates the global Codex config:
+
+```text
+~/.codex/config.toml
+```
+
+The installer backs up the previous config as `config.toml.bak-voice-notify-<timestamp>`, then sets Codex's global `notify` command to run `codex_notify.ps1` when a turn ends. Restart the Codex desktop app after installing so new chats load the updated global setting.
+
+You can still test the bundled MP3 directly:
 
 ```powershell
 .\notify\codex_notify.bat done
 .\notify\codex_notify.bat approval
 ```
 
-Use `done` when a task finishes and `approval` when a task needs user approval. The current Codex desktop app may not automatically run repository hooks for every task state, so call this script from your own wrapper, automation, or agent workflow when those events happen.
+Use `done` when a task finishes and `approval` when a task needs user approval. Codex's global `notify` setting is a turn-completion notifier; approval-specific sounds may still need to be called from an explicit workflow or hook.
 
 To run a command and play the notification after it exits:
 
