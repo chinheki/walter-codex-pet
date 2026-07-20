@@ -11,6 +11,7 @@ Walter is a q-bouncy gray-blue dumpling pet for Codex.
 - `qa/validation-extended.json` - deterministic atlas validation report.
 - `notify/codex_notify.ps1` - Windows PowerShell notification player.
 - `notify/codex_notify.bat` - convenience launcher for the notification script.
+- `notify/codex_notify_hook.ps1` - fire-and-forget hook entry point for Codex lifecycle events.
 - `notify/install_global_voice_notify.ps1` - installs the voice notification globally for Codex.
 - `notify/install_global_voice_notify.bat` - convenience launcher for the global installer.
 - `notify/run_with_codex_notify.ps1` - runs a command and plays the notification when it exits.
@@ -59,13 +60,16 @@ The installer copies the notification files into:
 ~/.codex/notify/
 ```
 
-It also updates the global Codex config:
+It also updates the global Codex config and hooks:
 
 ```text
 ~/.codex/config.toml
+~/.codex/hooks.json
 ```
 
-The installer backs up the previous config as `config.toml.bak-voice-notify-<timestamp>`, then sets Codex's global `notify` command to run `codex_notify.ps1` when a turn ends. Restart the Codex desktop app after installing so new chats load the updated global setting.
+The installer backs up the previous config as `config.toml.bak-voice-notify-<timestamp>` and any previous hooks file as `hooks.json.bak-voice-notify-<timestamp>`. It sets Codex's global `notify` command to run `codex_notify.ps1` when a turn ends, and also installs lifecycle hooks so `Stop` plays the completion voice and `PermissionRequest` plays the approval voice. Restart the Codex desktop app after installing so new chats load the updated global settings.
+
+Codex may ask you to review and trust the new hook definition before it runs. If prompted, approve the hook after checking that it points to `~/.codex/notify/codex_notify_hook.ps1`.
 
 You can still test the bundled MP3 directly:
 
@@ -74,7 +78,7 @@ You can still test the bundled MP3 directly:
 .\notify\codex_notify.bat approval
 ```
 
-Use `done` when a task finishes and `approval` when a task needs user approval. Codex's global `notify` setting is a turn-completion notifier; approval-specific sounds may still need to be called from an explicit workflow or hook.
+Use `done` when a task finishes and `approval` when a task needs user approval.
 
 To run a command and play the notification after it exits:
 
